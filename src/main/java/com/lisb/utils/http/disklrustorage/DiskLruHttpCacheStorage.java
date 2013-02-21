@@ -18,6 +18,7 @@ import java.util.Map.Entry;
 import ch.boye.httpclientandroidlib.Header;
 import ch.boye.httpclientandroidlib.ProtocolVersion;
 import ch.boye.httpclientandroidlib.StatusLine;
+import ch.boye.httpclientandroidlib.annotation.ThreadSafe;
 import ch.boye.httpclientandroidlib.client.cache.HttpCacheEntry;
 import ch.boye.httpclientandroidlib.client.cache.HttpCacheStorage;
 import ch.boye.httpclientandroidlib.client.cache.HttpCacheUpdateCallback;
@@ -33,6 +34,14 @@ import com.lisb.utils.http.disklrustorage.compat.Charsets;
 import com.lisb.utils.http.disklrustorage.compat.MD5;
 import com.lisb.utils.http.disklrustorage.compat.Strings;
 
+/**
+ * {@link DiskLruCache} をバックグランドにもつ {@link HttpCacheStorage}。
+ */
+// スレッドセーフ性はDiskLruCacheのスレッドセーフ性に依存しているところが大きい。
+// DiskLruCache はスレッドセーフだと明記されていないが、
+// 実装や利用方法をよんでスレッドセーフに作られていると判断した。
+// この前提がくずれると、このクラス自体に同期機構を組み込む必要があるので注意。
+@ThreadSafe
 public class DiskLruHttpCacheStorage implements HttpCacheStorage {
 
 	public static final int VERSION = 1;
@@ -42,9 +51,7 @@ public class DiskLruHttpCacheStorage implements HttpCacheStorage {
 	private static final int ENTRY_BODY = 1;
 	private static final int ENTRY_COUNT = 2;
 
-	// FIXME synchronizedすべきか検討
-
-	private DiskLruCache diskLruCache;
+	private final DiskLruCache diskLruCache;
 
 	public DiskLruHttpCacheStorage(final File directory, final long maxSize)
 			throws IOException {
