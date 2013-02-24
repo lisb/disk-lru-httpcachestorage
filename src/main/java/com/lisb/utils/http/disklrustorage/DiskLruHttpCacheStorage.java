@@ -59,6 +59,10 @@ public class DiskLruHttpCacheStorage implements HttpCacheStorage {
 				maxSize);
 	}
 
+	public void flush() throws IOException {
+		diskLruCache.flush();
+	}
+
 	public void delete() throws IOException {
 		diskLruCache.delete();
 	}
