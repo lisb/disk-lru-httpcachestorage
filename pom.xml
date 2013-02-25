@@ -2,14 +2,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.lisb.utils.http</groupId>
   <artifactId>disk-lru-httpcachestorage</artifactId>
-  <version>0.1.1</version>
+  <version>0.1.2</version>
   <name>disk-lru-httpcachestorage</name>
   
   <dependencies>
     <dependency>
       <groupId>com.jakewharton</groupId>
       <artifactId>disklrucache</artifactId>
-      <version>1.3.0</version>
+      <version>1.3.1</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

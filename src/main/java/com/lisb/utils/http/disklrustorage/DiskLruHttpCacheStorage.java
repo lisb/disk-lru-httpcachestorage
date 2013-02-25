@@ -139,12 +139,12 @@ public class DiskLruHttpCacheStorage implements HttpCacheStorage {
 		final StatusLine statusLine;
 		final Header[] responseHeaders;
 		final Map<String, String> variantMap;
-		BufferedInputStream in = null;
+		StrictLineReader in = null;
 		try {
-			in = new BufferedInputStream(
-					snapshot.getInputStream(ENTRY_METADATA));
-			requestDate = new Date(Long.valueOf(Streams.readAsciiLine(in)));
-			responseDate = new Date(Long.valueOf(Streams.readAsciiLine(in)));
+			in = new StrictLineReader(snapshot.getInputStream(ENTRY_METADATA),
+					Charsets.US_ASCII);
+			requestDate = new Date(Long.valueOf(in.readLine()));
+			responseDate = new Date(Long.valueOf(in.readLine()));
 			statusLine = readStatusLine(in);
 			responseHeaders = readResponseHeaders(in);
 			variantMap = readVariantMap(in);
@@ -160,44 +160,42 @@ public class DiskLruHttpCacheStorage implements HttpCacheStorage {
 				responseHeaders, resource, variantMap);
 	}
 
-	private StatusLine readStatusLine(final InputStream in) throws IOException {
+	private StatusLine readStatusLine(final StrictLineReader in) throws IOException {
 		final ProtocolVersion version = readProtocolVersion(in);
-		final int statusCode = Integer.valueOf(Streams.readAsciiLine(in));
-		final String reasonPhrase = Streams.readAsciiLine(in);
+		final int statusCode = Integer.valueOf(in.readLine());
+		final String reasonPhrase = in.readLine();
 		return new BasicStatusLine(version, statusCode, reasonPhrase);
 	}
 
-	private ProtocolVersion readProtocolVersion(final InputStream in)
+	private ProtocolVersion readProtocolVersion(final StrictLineReader in)
 			throws IOException {
-		final String protocol = Streams.readAsciiLine(in);
-		final int majorProtocolVersion = Integer.valueOf(Streams
-				.readAsciiLine(in));
-		final int minorProtocolVersion = Integer.valueOf(Streams
-				.readAsciiLine(in));
+		final String protocol = in.readLine();
+		final int majorProtocolVersion = Integer.valueOf(in.readLine());
+		final int minorProtocolVersion = Integer.valueOf(in.readLine());
 		return new ProtocolVersion(protocol, majorProtocolVersion,
 				minorProtocolVersion);
 	}
 
-	private Header[] readResponseHeaders(final InputStream in)
+	private Header[] readResponseHeaders(final StrictLineReader in)
 			throws IOException {
-		final int headerCount = Integer.valueOf(Streams.readAsciiLine(in));
+		final int headerCount = Integer.valueOf(in.readLine());
 		final Header[] headers = new Header[headerCount];
 		for (int i = 0; i < headerCount; i++) {
-			final String key = Streams.readAsciiLine(in);
-			final String value = Streams.readAsciiLine(in);
+			final String key = in.readLine();
+			final String value = in.readLine();
 			headers[i] = new BasicHeader(key, value);
 		}
 
 		return headers;
 	}
 
-	private Map<String, String> readVariantMap(final InputStream in)
+	private Map<String, String> readVariantMap(final StrictLineReader in)
 			throws IOException {
-		final int mapSize = Integer.valueOf(Streams.readAsciiLine(in));
+		final int mapSize = Integer.valueOf(in.readLine());
 		final Map<String, String> map = new HashMap<String, String>(mapSize * 2);
 		for (int i = 0; i < mapSize; i++) {
-			final String key = Streams.readAsciiLine(in);
-			final String value = Streams.readAsciiLine(in);
+			final String key = in.readLine();
+			final String value = in.readLine();
 			map.put(key, value);
 		}
 
