@@ -105,7 +105,6 @@ public class DiskLruHttpCacheStorage implements HttpCacheStorage {
 
 	public void updateEntry(String key, HttpCacheUpdateCallback callback)
 			throws IOException, HttpCacheUpdateException {
-		key = uriToKey(key);
 		final HttpCacheEntry existing = getEntry(key);
 		final HttpCacheEntry updating = callback.update(existing);
 		putEntry(key, updating);
