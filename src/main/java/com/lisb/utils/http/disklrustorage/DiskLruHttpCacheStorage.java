@@ -27,9 +27,9 @@ import ch.boye.httpclientandroidlib.client.cache.Resource;
 import ch.boye.httpclientandroidlib.message.BasicHeader;
 import ch.boye.httpclientandroidlib.message.BasicStatusLine;
 
-import com.jakewharton.DiskLruCache;
-import com.jakewharton.DiskLruCache.Editor;
-import com.jakewharton.DiskLruCache.Snapshot;
+import com.jakewharton.disklrucache.DiskLruCache;
+import com.jakewharton.disklrucache.DiskLruCache.Editor;
+import com.jakewharton.disklrucache.DiskLruCache.Snapshot;
 import com.lisb.utils.http.disklrustorage.compat.Charsets;
 import com.lisb.utils.http.disklrustorage.compat.MD5;
 import com.lisb.utils.http.disklrustorage.compat.Strings;
